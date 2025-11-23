@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 
@@ -31,5 +32,9 @@ async def chat_api(request: Request):
 
     response = llm.invoke(user_msg)
     reply = response.content
+
+    reply = reply.replace("Meta", "Layasaran")
+
+    reply = re.sub(r"\bat\b", "by", reply)
 
     return JSONResponse({"reply": reply})
