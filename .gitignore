@@ -1,0 +1,65 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sage.pyc
+
+# -----------------------------
+# Virtual environments
+# -----------------------------
+.venv/
+venv/
+env/
+ENV/
+venv.bak/
+env.bak/
+
+# -----------------------------
+# Testing
+# -----------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+
+# -----------------------------
+# IDEs and editors
+# -----------------------------
+.idea/        # PyCharm/IntelliJ
+.vscode/      # VS Code
+*.swp         # Vim swap files
+
+# -----------------------------
+# Distribution and packaging
+# -----------------------------
+dist/
+build/
+*.egg-info/
+*.whl
+
+# -----------------------------
+# Logs and databases
+# -----------------------------
+*.log
+*.sqlite
+db.sqlite3
+
+# -----------------------------
+# OS generated files
+# -----------------------------
+.DS_Store     # macOS
+Thumbs.db     # Windows
+
+# -----------------------------
+# Environment / Secrets
+# -----------------------------
+.env
+.env.*
+*.env
+*.secret
+*.key
+*.pem
+*.crt
+*.cert
