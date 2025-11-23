@@ -1,56 +1,35 @@
-import streamlit as st
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import JSONResponse
 from langchain_groq import ChatGroq
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
+
 os.environ["GROQ_API_KEY"] = os.getenv("GROQ")
 
-st.set_page_config(page_title="Layasaran LLM", page_icon="✨", layout="centered")
+app = FastAPI()
 
-st.markdown("""
-<style>
-    .title {
-        font-size: 38px;
-        font-weight: 700;
-        text-align: center;
-        padding-top: 30px;
-        color: #e0e0e0;
-    }
-    .subtitle {
-        text-align: center;
-        font-size: 16px;
-        margin-top: -10px;
-        margin-bottom: 40px;
-        color: #b0b0b0;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("<div class='title'>✨ Layasaran Language Model ✨</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>Experience fast and intelligent AI responses powered by Layasaran intelligent</div>",
-            unsafe_allow_html=True)
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+templates = Jinja2Templates(directory="templates")
 
 llm = ChatGroq(model="llama-3.1-8b-instant")
 
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.write(msg["content"])
 
-user_input = st.chat_input("Your Message")
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-if user_input:
 
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user"):
-        st.write(user_input)
+@app.post("/chat")
+async def chat_api(request: Request):
+    data = await request.json()
+    user_msg = data.get("message")
 
-    response = llm.invoke(user_input)
+    if not user_msg:
+        return JSONResponse({"error": "Message is required"}, status_code=400)
+
+    response = llm.invoke(user_msg)
     reply = response.content
 
-    st.session_state.messages.append({"role": "assistant", "content": reply})
-    with st.chat_message("assistant"):
-        st.write(reply)
+    return JSONResponse({"reply": reply})

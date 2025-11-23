@@ -1,4 +1,6 @@
+fastapi
+uvicorn
+Jinja2
+python-dotenv
 langchain-core
 langchain-groq
-streamlit
-python-dotenv
