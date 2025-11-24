@@ -2,17 +2,24 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import JSONResponse
 from langchain_groq import ChatGroq
+from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 import os
-import re
 
 load_dotenv()
 
 os.environ["GROQ_API_KEY"] = os.getenv("GROQ")
 
 app = FastAPI()
-
 templates = Jinja2Templates(directory="templates")
+
+# System instruction (identity)
+system_prompt = """
+You are a helpful AI assistant created by Layasaran.
+If the user asks who created you, who developed you, who built you, or any similar question,
+ALWAYS answer: "I was created by Layasaran."
+Never mention Meta, Llama, Groq, or LangChain in creation-related answers.
+"""
 
 llm = ChatGroq(model="llama-3.1-8b-instant")
 
@@ -30,11 +37,12 @@ async def chat_api(request: Request):
     if not user_msg:
         return JSONResponse({"error": "Message is required"}, status_code=400)
 
-    response = llm.invoke(user_msg)
+    # Send system + user messages together
+    response = llm.invoke([
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_msg)
+    ])
+
     reply = response.content
-
-    reply = reply.replace("Meta", "Layasaran")
-
-    reply = re.sub(r"\bat\b", "by", reply)
 
     return JSONResponse({"reply": reply})
